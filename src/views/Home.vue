@@ -199,7 +199,9 @@ export default {
       }, $this.time)
 
       this.PBSInterval = setInterval(() => {
-        $this.firstData.splice(0, 5)
+        if ($this.firstData.length >= 50) {
+          $this.firstData.splice(0, 5)
+        }
       }, 5000)
     },
     stopTimer () {
