@@ -153,8 +153,7 @@ export default {
         return item.planOut
     })
     // this.threeData = this.fourData.splice(0, 10)
-    this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))
-    console.log(this.threeData)
+    this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))[0]
     this.fourData.splice(0, this.inputVal)
 
     this.inventoryInterval = setInterval(() => {
