@@ -155,38 +155,42 @@ export default {
     // this.threeData = this.fourData.splice(0, 10)
     this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)  //数组扁平化处理
     this.fourData.splice(0, this.inputVal)
-
-    this.inventoryInterval = setInterval(() => {
-      $this.fourData.push($this.sixData[$this.inputVal + this.index])
-      if ($this.threeData.length === 0) {
-        $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
-      }
-      // $this.threeData.push($this.fourData[0])
-      // $this.fourData.splice(0, 1)
-      $this.index++
-    }, $this.time)
-
-    this.tasksInterval = setInterval(() => {
-      $this.threeData[0].outNum = $this.ID
-      $this.fiveData.forEach((item,index) => {
-        if (item.planOut === $this.threeData[0].planOut) {
-           $this.fiveData[index].outNum = $this.ID
-        }
-      })
-      $this.firstData.push($this.threeData[0])
-      $this.ID++
-      if ($this.LastColor !== $this.threeData[0].color) {
-        $this.changeColors++
-      }
-      $this.LastColor = $this.threeData[0].color
-      $this.threeData.splice(0, 1)
-    }, $this.time)
-
-    this.PBSInterval = setInterval(() => {
-      $this.firstData.splice(0, 5)
-    }, 5000)
+    this.timerList()
+    
   },
   methods: {
+    timerList () {
+      var $this = this
+        this.inventoryInterval = setInterval(() => {
+        $this.fourData.push($this.sixData[$this.inputVal + this.index])
+        if ($this.threeData.length === 0) {
+          $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
+        }
+        // $this.threeData.push($this.fourData[0])
+        // $this.fourData.splice(0, 1)
+        $this.index++
+      }, $this.time)
+
+      this.tasksInterval = setInterval(() => {
+        $this.threeData[0].outNum = $this.ID
+        $this.fiveData.forEach((item,index) => {
+          if (item.planOut === $this.threeData[0].planOut) {
+            $this.fiveData[index].outNum = $this.ID
+          }
+        })
+        $this.firstData.push($this.threeData[0])
+        $this.ID++
+        if ($this.LastColor !== $this.threeData[0].color) {
+          $this.changeColors++
+        }
+        $this.LastColor = $this.threeData[0].color
+        $this.threeData.splice(0, 1)
+      }, $this.time)
+
+      this.PBSInterval = setInterval(() => {
+        $this.firstData.splice(0, 5)
+      }, 5000)
+    },
     stopTimer () {
       var $this = this
       this.type = !this.type
@@ -195,35 +199,7 @@ export default {
         clearInterval(this.tasksInterval)
         clearInterval(this.PBSInterval)
       } else {
-        this.inventoryInterval = setInterval(() => {
-          $this.fourData.push($this.sixData[$this.inputVal + this.index])
-          if (this.threeData.length === 0) {
-            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)
-          }
-          // $this.threeData.push($this.fourData[0])
-          // $this.fourData.splice(0, 1)
-          this.index++
-        }, $this.time)
-
-        this.tasksInterval = setInterval(() => {
-          $this.threeData[0].outNum = this.ID
-          $this.fiveData.forEach((item,index) => {
-            if (item.planOut === $this.threeData[0].planOut) {
-              $this.fiveData[index].outNum = this.ID
-            }
-          })
-          $this.firstData.push($this.threeData[0])
-          $this.ID++
-          if ($this.LastColor !== $this.threeData[0].color) {
-            $this.changeColors++
-          }
-          $this.LastColor = $this.threeData[0].color
-          $this.threeData.splice(0, 1)
-        }, $this.time)
-
-        this.PBSInterval = setInterval(() => {
-          $this.firstData.splice(0, 5)
-        }, 5000)
+        this.timerList()
       }
     },
     clearData () {
@@ -245,35 +221,7 @@ export default {
         clearInterval(this.tasksInterval)
         clearInterval(this.PBSInterval)
         clearInterval(this.clearTimer)
-        this.inventoryInterval = setInterval(() => {
-          $this.fourData.push($this.sixData[$this.inputVal + this.index])
-          if (this.threeData.length === 0) {
-            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)
-          }
-          // $this.threeData.push($this.fourData[0])
-          // $this.fourData.splice(0, 1)
-          this.index++
-        }, $this.time)
-
-        this.tasksInterval = setInterval(() => {
-          $this.threeData[0].outNum = this.ID
-          $this.fiveData.forEach((item,index) => {
-            if (item.planOut === $this.threeData[0].planOut) {
-              $this.fiveData[index].outNum = this.ID
-            }
-          })
-          $this.firstData.push($this.threeData[0])
-          $this.ID++
-          if ($this.LastColor !== $this.threeData[0].color) {
-            $this.changeColors++
-          }
-          $this.LastColor = $this.threeData[0].color
-          $this.threeData.splice(0, 1)
-        }, $this.time)
-
-        this.PBSInterval = setInterval(() => {
-          $this.firstData.splice(0, 5)
-        }, 5000)
+        this.timerList()
       }
     },
     fiveRowClassName({row, rowIndex}){
