@@ -102,16 +102,16 @@ export default {
       secondData: [],
       threeData: [],
       fourData: [],
-      fiveData: data.data_out,
-      sixData: data.data_in,
-      inventoryInterval: null,
-      tasksInterval: null,
-      PBSInterval: null,
-      currentSix: [],
-      currentFirst: [],
-      firstList: [],
-      threeList: [],
-      sixList: [],
+      fiveData: data.data_out,  // 总装要车表格数据
+      sixData: data.data_in,  // 焊装发车表格数据
+      inventoryInterval: null, // 漆前库-库存 定时器
+      tasksInterval: null,  // 漆前库-任务池 定时器
+      PBSInterval: null,  // PBS 定时器
+      currentSix: [],   // 漆前库-库存 表格当前数据 （用于焊装发车表格行设置颜色）
+      currentFirst: [], // PBS 表格当前数据 （用于总装发车表格行设置颜色）
+      firstList: [],  // PBS 表格历史数据 + 表格当前数据 （）
+      threeList: [], // 漆前库-任务池 表格历史数据 + 表格当前数据
+      sixList: [],  
       time: 1000,
       inputVal: 36, //漆前库初始数量
       LastColor: '', //上车颜色
@@ -266,56 +266,132 @@ export default {
     },
 
     // 算法部分
-       
-    // 确认任务池数据为空 输入漆前库内的相关对象数组，返回应该投入到任务池中的对象数据
     // GetDataToCommandPool(data_qiqian) {
-    //   console.log(this.ID)
-    //   console.log(this.LastColor)
-    //     var min_planOut
-    //     var min_color
-    //     //1 判断上车颜色 是否与库存内的最小任务号相同
-    //     if (data_qiqian.length > 0) {
+    //         var min_planOut
+    //         var min_color 
+    //         //1 判断上车颜色 是否与库存内的最小任务号相同
+    //         if (data_qiqian.length > 0) {
+                 
+    //             var temp_li = data_qiqian.sort((b, c) => (b.planOut - c.planOut))
+    //             min_planOut = temp_li[0].planOut
+    //             min_color = temp_li[0].color 
 
-    //         var temp_li = data_qiqian.sort((b, c) => (b.planOut - c.planOut))
-    //         min_planOut = temp_li[0].planOut
-    //         min_color = temp_li[0].color
+    //             // 1.1相同   计算非当前颜色的最小顺序号，最大喷漆组数量
+    //             if (min_color == this.LastColor) {
 
-    //         // 1.1相同   计算非当前颜色的最小顺序号，最大喷漆组数量
-    //         if (min_color == this.LastColor) {
+    //                 var min2_data = this.filiterisNotColor(data_qiqian, min_color).sort((b, c) => (b.planOut - c.planOut))
+    //                 //的最小顺序号
+    //                 var min2_planOut = min2_data[0].planOut
+    //                 // 判断该颜色数量  是否小于 第二小顺序号的最大喷漆组数量
+    //                 if (this.ID + this.filiterColor(data_qiqian, min_color).length < min2_planOut + 50) {
+    //                     return this.filiterColor(data_qiqian, min_color)
+    //                 }
+    //                 else {
+    //                     //不做处理 继续执行
 
-    //             var min2_data = filiterisNotColor(data_qiqian, min_color).sort((b, c) => (b.planOut - c.planOut))
-    //             //的最小顺序号
-    //             var min2_planOut = min2_data[0].planOut
-    //             // 判断该颜色数量  是否小于 第二小顺序号的最大喷漆组数量
-    //             if (this.ID + filiterColor(data_qiqian, min_color).length < min2_planOut + 50) {
-    //                 return filiterColor(data_qiqian, min_color)
+    //                 }
+    //             }
+
+    //             // 所有组  取当前任务号根据加上对应颜色的漆前库库存数量，排除影响其他颜色出库顺序颜色
+    //             var GroupData = this.filiterComputeGroupByColor(data_qiqian);
+
+    //             //排除影响出库的颜色分组()
+    //             var excludeResult =  this.excludeGroup(GroupData);
+
+    //             //如果筛选结果不为空的话，从筛选结果中取
+    //             if (excludeResult) {
+    //                 //优先选择与上次喷漆色相同的
+    //                 if (this.filiterColor(excludeResult, this.LastColor).length > 1) {
+    //                     return this.filiterColor(excludeResult, this.LastColor);
+    //                 }
+    //                 else {
+    //                     //暂时返回最小顺序的
+    //                     return this.filiterColor(excludeResult, min_color);
+    //                 }
     //             }
     //             else {
-    //               //不做处理 继续执行
+    //                 return this.filiterColor(data_qiqian, min_color);
 
-    //           }
+    //             }
+
     //         }
-    //         // 取所有组根据当前任务号加上对应颜色的漆前库库存数量，排除影响其他颜色出库顺序颜色
-    //         return data_qiqian
-    //     }
+    // },
+    //  //选取前N条进行出库
+
+
+
+    // //排除影响出库的颜色分组() 
+    // excludeGroup(data ,color) {
+
+    //     ////递归移除
+    //     //data.forEach((item, index, arr) => {
+    //     //    if (item.color === "宇宙蓝金属漆") {
+    //     //        data.splice(index, 1)
+    //     //    }
+    //     //});
+    //     //return data;
+    //     var del_li 
+    //     $.each(data, function (i, item) {
+    //         var result = true;
+    //         console.log(i);
+    //         console.log(item.color);
+    //         $.each(data, function (j, item1) {
+    //             // 当前任务号加本颜色的数量，若大于其中一个其他颜色的最小出库顺序号+50的情况视为影响出库
+    //             if (i != j) {
+    //                 //if ((item1.MinPlanOut + 50) < (ID + item.num)) {
+    //                 if ((item.color == color)) { 
+    //                     result = false;
+    //                 }
+    //             }
+    //         });
+    //         item.result = result;
+    //     });
+    //     data = data.filter(item => item.result == true)
+    //     return data;
     // },
 
-    // //筛选出库颜色
+    //     //筛选出库颜色
     // filiterColor(data, itemcolor) {
-    //   return data_qiqian.filter(item => item.color == itemcolor)
+    //     return data.filter(item => item.color == itemcolor)
     // },
+
 
     // //排除出库颜色
     // filiterisNotColor(data, itemcolor) {
-    //   return data_qiqian.filter(item => item.color == itemcolor)
+    //     return data.filter(item => item.color == itemcolor)
     // },
-    // //颜色分组
+
+    // //选出该数据的前N条
+
+
+
+    // //颜色分组 
     // filiterComputeGroupByColor(data) {
-    // //var tempcolor = "" 
-    // //var return_list 
-    // //while ()
+    //     var sorted = this.groupBy(data, function (item) {
+    //         return [item.color];//按照color进行分组
+    //     });
+    //     $.each(sorted, function (i, item) {
+    //         item.color = item[0].color
+    //         item.MinPlanOut = item[0].planOut
+    //         item.num = item.length
+    //     });
+    //     return sorted
+    // },
+
+    // groupBy(array, f) {
+    //     const groups = {};
+    //     array.forEach(function (o) { //注意这里必须是forEach 大写
+    //         const group = JSON.stringify(f(o));
+    //         groups[group] = groups[group] || [];
+    //         groups[group].push(o);
+    //     });
+    //     return Object.keys(groups).map(function (group) {
+    //         return groups[group];
+    //     });
     // }
-    GetDataToCommandPool(data_qiqian) {
+
+    // 确认任务池数据为空 输入漆前库内的相关对象数组，返回应该投入到任务池中的对象数据
+        GetDataToCommandPool(data_qiqian) {
             var min_planOut
             var min_color 
             //1 判断上车颜色 是否与库存内的最小任务号相同
@@ -323,8 +399,9 @@ export default {
                  
                 var temp_li = data_qiqian.sort((b, c) => (b.planOut - c.planOut))
                 min_planOut = temp_li[0].planOut
-                min_color = temp_li[0].color 
-
+                min_color = temp_li[0].color
+                console.log("min_color " + min_color + " " + min_planOut);
+                console.log()
                 // 1.1相同   计算非当前颜色的最小顺序号，最大喷漆组数量
                 if (min_color == this.LastColor) {
 
@@ -345,7 +422,7 @@ export default {
                 var GroupData = this.filiterComputeGroupByColor(data_qiqian);
 
                 //排除影响出库的颜色分组()
-                var excludeResult =  this.excludeGroup(GroupData);
+                var excludeResult =   this.excludeGroup(GroupData);
 
                 //如果筛选结果不为空的话，从筛选结果中取
                 if (excludeResult) {
@@ -354,90 +431,117 @@ export default {
                         return this.filiterColor(excludeResult, this.LastColor);
                     }
                     else {
-                        //暂时返回最小顺序的
-                        return this.filiterColor(excludeResult, min_color);
+                        //暂时返回数量最多的一个
+                        //console.log("暂时返回数量最多的一个")
+                        return excludeResult.sort((b, c) => (c.num - b.num))[0];
                     }
                 }
                 else {
-                    return this.filiterColor(data_qiqian, min_color);
+                    //筛选结果为空情况下  进入截取模式
 
-                }
-
-            }
-    },
-     //选取前N条进行出库
-
-
-
-    //排除影响出库的颜色分组() 
-    excludeGroup(data ,color) {
-
-        ////递归移除
-        //data.forEach((item, index, arr) => {
-        //    if (item.color === "宇宙蓝金属漆") {
-        //        data.splice(index, 1)
-        //    }
-        //});
-        //return data;
-        var del_li 
-        $.each(data, function (i, item) {
-            var result = true;
-            console.log(i);
-            console.log(item.color);
-            $.each(data, function (j, item1) {
-                // 当前任务号加本颜色的数量，若大于其中一个其他颜色的最小出库顺序号+50的情况视为影响出库
-                if (i != j) {
-                    //if ((item1.MinPlanOut + 50) < (ID + item.num)) {
-                    if ((item.color == color)) { 
-                        result = false;
+                    //如果只有自己的情况下
+                    if (GroupData.length <= 1) {
+                        return GroupData[0]
+                    }
+                    else {
+                        //查询每一条 除了自己颜色外 ， 其他数据的最小顺序号
+                        return this.GetOtherMinNum(GroupData); 
                     }
                 }
+            }
+        },
+         
+        //选取前N条
+        GetTopNbyColor(data, num) {
+             var dd =  data.filter((e, v) => {
+                 if (v < num) {
+                    return true;
+                }
+             })
+            return dd;
+        },
+
+
+        //计算每一条 除了自己颜色外 ， 其他数据的最小顺序号 的那条
+        GetOtherMinNum(data) {
+            $.each(data, function (i, item){
+                item.num = 50 + data[this.filiterisNotColor(data, item.color).sort((b, c) => (b.planOut - c.planOut))[0]] - this.ID
             });
-            item.result = result;
-        });
-        data = data.filter(item => item.result == true)
-        return data;
-    },
+
+            return data.sort((b, c) => (c.num - b.num))[0];
+        },
+
+
+        //排除影响出库的颜色分组() 
+        excludeGroup(data ,color) {
+
+            ////递归移除
+            //data.forEach((item, index, arr) => {
+            //    if (item.color === "宇宙蓝金属漆") {
+            //        data.splice(index, 1)
+            //    }
+            //});
+            //return data;
+            var del_li 
+            $.each(data, function (i, item) {
+                var result = true;
+                console.log(i);
+                console.log(item.color);
+                $.each(data, function (j, item1) {
+                    // 当前任务号加本颜色的数量，若大于其中一个其他颜色的最小出库顺序号+50的情况视为影响出库
+                    if (i != j) {
+                        //if ((item1.MinPlanOut + 50) < (ID + item.num)) {
+                        if ((item.color == color)) { 
+                            result = false;
+                        }
+                    }
+                });
+                item.result = result;
+            });
+            data = data.filter(item => item.result == true)
+            return data;
+        },
 
         //筛选出库颜色
-    filiterColor(data, itemcolor) {
-        return data.filter(item => item.color == itemcolor)
-    },
+        filiterColor(data, itemcolor) {
+            return data.filter(item => item.color == itemcolor)
+        },
 
 
-    //排除出库颜色
-    filiterisNotColor(data, itemcolor) {
-        return data.filter(item => item.color == itemcolor)
-    },
+        //排除出库颜色
+        filiterisNotColor(data, itemcolor) {
+            return data.filter(item => item.color == itemcolor)
+        },
 
-    //选出该数据的前N条
+        //选出该数据的前N条
 
 
 
-    //颜色分组 
-    filiterComputeGroupByColor(data) {
-        var sorted = this.groupBy(data, function (item) {
-            return [item.color];//按照color进行分组
-        });
-        $.each(sorted, function (i, item) {
-            item.color = item[0].color
-            item.MinPlanOut = item[0].planOut
-            item.num = item.length
-        });
-        return sorted
-    },
+        //颜色分组 
+        filiterComputeGroupByColor(data) {
+           var sorted = this.groupBy(data, function (item) {
+                return [item.color];//按照color进行分组
+           });
+            $.each(sorted, function (i, item) {
+                item.color = item[0].color
+                item.MinPlanOut = item[0].planOut
+                item.num = item.length
+            });
+            return sorted
+        },
 
-    groupBy(array, f) {
-        const groups = {};
-        array.forEach(function (o) { //注意这里必须是forEach 大写
-            const group = JSON.stringify(f(o));
-            groups[group] = groups[group] || [];
-            groups[group].push(o);
-        });
-        return Object.keys(groups).map(function (group) {
-            return groups[group];
-        });
-    }
+        groupBy(array, f) {
+            const groups = {};
+            array.forEach(function (o) { //注意这里必须是forEach 大写
+                const group = JSON.stringify(f(o));
+                groups[group] = groups[group] || [];
+                groups[group].push(o);
+            });
+            return Object.keys(groups).map(function (group) {
+                return groups[group];
+            });
+        }
+          
           
   }
 }
