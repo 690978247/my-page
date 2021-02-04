@@ -74,12 +74,6 @@ export default {
       type: true,
       clear: true,
       quick: true,
-      processHead: [
-        {
-          prop: 'process',
-          label: '工艺'
-        }
-      ],
       tableHead: [
         {
           prop: 'planOut',
@@ -107,15 +101,15 @@ export default {
       inventoryInterval: null, // 漆前库-库存 定时器
       tasksInterval: null,  // 漆前库-任务池 定时器
       PBSInterval: null,  // PBS 定时器
-      currentSix: [],   // 漆前库-库存 表格当前数据 （用于焊装发车表格行设置颜色）
-      currentFirst: [], // PBS 表格当前数据 （用于总装发车表格行设置颜色）
-      firstList: [],  // PBS 表格历史数据 + 表格当前数据 （）
+      currentSix: [],   // 漆前库-库存 表格当前数据 （设置焊装发车表格行颜色）
+      currentFirst: [], // PBS 表格当前数据 （设置总装要车表格行颜色）
+      firstList: [],  // PBS 表格历史数据 + 表格当前数据  （设置总装要车表格行颜色）
       threeList: [], // 漆前库-任务池 表格历史数据 + 表格当前数据
-      sixList: [],  
-      time: 1000,
+      sixList: [],   //漆前库-库存 格历史数据 + 表格当前数据 (设置焊装发车表格行颜色)
+      time: 1000, // timeList 定时器运行间隔时间
       inputVal: 36, //漆前库初始数量
-      LastColor: '', //上车颜色
-      changeColors: 0,
+      LastColor: '', //上次颜色
+      changeColors: 0, // 换色次数
       ID: 0, //当前任务号
       index: 0,
       clearTimer: null,
