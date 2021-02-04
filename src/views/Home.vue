@@ -163,10 +163,10 @@ export default {
     timerList () {
       var $this = this
         this.inventoryInterval = setInterval(() => {
-        $this.fourData.push($this.sixData[$this.inputVal + this.index])
+        $this.fourData.push($this.sixData[$this.inputVal + $this.index])
         if ($this.threeData.length === 0) {
           $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
-          this.threeList = this.threeData.map((item, index) => {
+          $this.threeList = $this.threeData.map((item, index) => {
               return item.planOut
           })
           $this.fourData = $this.fourData.filter(item => !$this.threeList.includes(item.planOut))
