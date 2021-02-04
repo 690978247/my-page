@@ -7,12 +7,12 @@
         <p>任务号：<span>{{ID}}</span></p>
       </div>
       <div class="head-btns" >
-        <el-input class="btn-input" ></el-input>
+        <!-- <el-input class="btn-input" ></el-input>
         <el-button v-model="invalue" >开始入库</el-button>
         <el-input class="btn-input" ></el-input>
-        <el-button v-model="outvalue" >开始出库</el-button>
+        <el-button v-model="outvalue" >开始出库</el-button> -->
         <el-button @click="stopTimer" >{{ type? '暂 停': '恢 复' }}</el-button>
-        <el-button @click="clearData" >清 空</el-button>
+        <el-button @click="clearData" >{{ clear? '清 空': '继 续' }}</el-button>
         <el-button @click="quickCount" >快速计算</el-button>
       </div>
     </div>
@@ -71,6 +71,7 @@ export default {
       invalue: '',
       outvalue: '',
       type: true,
+      clear: true,
       processHead: [
         {
           prop: 'process',
@@ -104,6 +105,8 @@ export default {
       inventoryInterval: null,
       tasksInterval: null,
       PBSInterval: null,
+      currentSix: [],
+      currentFirst: [],
       firstList: [],
       sixList: [],
       time: 1000,
@@ -117,14 +120,29 @@ export default {
   },
   watch: {
     firstData (val) {
-      this.firstList = val.map((item, index) => {
+      this.currentFirst = val.map((item, index) => {
         return item.planOut
       })
+      this.firstList = this.firstList.concat(this.currentFirst) //数组合并
+      this.firstList = [...new Set(this.firstList)] //数组去重
     },
+    // fourData: {
+    //   handler: function(val, oldVal) {
+    //     let list = []
+    //   list = val.map((item, index) => {
+    //     return item.planOut
+    //   })
+    //   this.sixList = this.sixList.concat(list) //数组合并
+    //   this.sixList = [...new Set(this.sixList)] //数组去重
+    //   },
+    //   immediate: true
+    // },
     fourData (val) {
-      this.sixList = val.map((item, index) => {
+      this.currentSix = val.map((item, index) => {
         return item.planOut
       })
+      this.sixList = this.sixList.concat(this.currentSix) //数组合并
+      this.sixList = [...new Set(this.sixList)] //数组去重
     },
   },
   created() {
@@ -205,22 +223,61 @@ export default {
       }
     },
     clearData () {
-      this.clearTimer = setInterval(() => {
-        if (this.threeData.length === 0) {
-          clearInterval(this.inventoryInterval)
-          clearInterval(this.tasksInterval)
-          clearInterval(this.PBSInterval)
-        }
-      }, 1000)
+      var $this = this
+      if (this.clear) {
+        this.clearTimer = setInterval(() => {
+          if ($this.threeData.length === 0) {
+            $this.clear = !$this.clear
+            clearInterval(this.inventoryInterval)
+            clearInterval(this.tasksInterval)
+            clearInterval(this.PBSInterval)
+            clearInterval(this.clearTimer)
+          }
+        }, 1000)
+      } else {
+        $this.clear = !$this.clear
+        this.inventoryInterval = setInterval(() => {
+          $this.fourData.push($this.sixData[$this.inputVal + this.index])
+          if (this.threeData.length === 0) {
+            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))
+          }
+          // $this.threeData.push($this.fourData[0])
+          // $this.fourData.splice(0, 1)
+          this.index++
+        }, $this.time)
+
+        this.tasksInterval = setInterval(() => {
+          $this.threeData[0].outNum = this.ID
+          $this.fiveData.forEach((item,index) => {
+            if (item.planOut === $this.threeData[0].planOut) {
+              $this.fiveData[index].outNum = this.ID
+            }
+          })
+          $this.firstData.push($this.threeData[0])
+          $this.ID++
+          if ($this.LastColor !== $this.threeData[0].color) {
+            $this.changeColors++
+          }
+          $this.LastColor = $this.threeData[0].color
+          $this.threeData.splice(0, 1)
+        }, $this.time)
+
+        this.PBSInterval = setInterval(() => {
+          $this.firstData.splice(0, 5)
+        }, 5000)
+      }
     },
     fiveRowClassName({row, rowIndex}){
+      if (this.currentFirst.includes(row.planOut)) {
+        return 'in-row'
+      }
       if (this.firstList.includes(row.planOut)) {
-        return 'warning-row'
+        return 'out-row'
       }
     },
     sixRowClassName({row, rowIndex}){
       if (this.sixList.includes(row.planOut)) {
-        return 'warning-row'
+        return 'out-row'
       }
     },
     quickCount () {

@@ -24,7 +24,13 @@ h1,h2,h3,h4,h5,h6,p {
 }
 
 
-.el-table .warning-row td {
+.el-table .out-row td {
   // background: #ff4949 !important;
   color: #ff4949 !important;
+}
+
+.el-table .in-row td {
+  // background: #ff4949 !important;
+  font-weight: bold;
+  color: green !important;
 }
