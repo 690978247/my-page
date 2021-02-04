@@ -148,6 +148,9 @@ export default {
   created() {
     var $this = this
     this.fourData = this.fiveData.slice(0, this.inputVal)
+    this.sixList = this.fourData.map((item, index) => {
+        return item.planOut
+    })
     // this.threeData = this.fourData.splice(0, 10)
     this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))
     this.fourData.splice(0, this.inputVal)
@@ -281,6 +284,9 @@ export default {
       }
     },
     sixRowClassName({row, rowIndex}){
+      if (this.currentSix.includes(row.planOut)) {
+        return 'in-row'
+      }
       if (this.sixList.includes(row.planOut)) {
         return 'out-row'
       }
