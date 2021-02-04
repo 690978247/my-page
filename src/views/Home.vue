@@ -60,6 +60,7 @@
 <script>
 import baseTable from '../components/baseTable'
 import data from '../../data'
+import $ from 'jquery'
 
 export default {
   name: 'Home',
@@ -294,6 +295,8 @@ export default {
     quickCount () {
       this.time = 0
     },
+
+    // 算法部分
        
     // 确认任务池数据为空 输入漆前库内的相关对象数组，返回应该投入到任务池中的对象数据
     GetDataToCommandPool(data_qiqian) {
