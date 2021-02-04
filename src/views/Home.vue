@@ -13,7 +13,7 @@
         <el-button v-model="outvalue" >开始出库</el-button> -->
         <el-button @click="stopTimer" >{{ type? '暂 停': '恢 复' }}</el-button>
         <el-button @click="clearData" >{{ clear? '清 空': '继 续' }}</el-button>
-        <el-button @click="quickCount" >快速计算</el-button>
+        <el-button @click="quickCount"  >{{ quick ?'快速计算': '恢复计算' }}</el-button>
       </div>
     </div>
     <div class="wrap" >
@@ -73,6 +73,7 @@ export default {
       outvalue: '',
       type: true,
       clear: true,
+      quick: true,
       processHead: [
         {
           prop: 'process',
@@ -159,6 +160,7 @@ export default {
     
   },
   methods: {
+    // 定时器启动
     timerList () {
       var $this = this
         this.inventoryInterval = setInterval(() => {
@@ -241,7 +243,17 @@ export default {
       }
     },
     quickCount () {
-      this.time = 0
+      clearInterval(this.inventoryInterval)
+      clearInterval(this.tasksInterval)
+      clearInterval(this.PBSInterval)
+      if (this.quick) {
+        this.time = 0
+        this.timerList()
+      } else {
+        this.time = 1000
+        this.timerList()
+      }
+      this.quick = ! this.quick 
     },
 
     // 算法部分
