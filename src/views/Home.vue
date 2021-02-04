@@ -439,7 +439,7 @@ export default {
 
     //排除出库颜色
     filiterisNotColor(data, itemcolor) {
-        return data_qiqian.filter(item => item.color == itemcolor)
+        return data.filter(item => item.color == itemcolor)
     },
 
     //选出该数据的前N条
