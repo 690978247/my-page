@@ -153,13 +153,13 @@ export default {
         return item.planOut
     })
     // this.threeData = this.fourData.splice(0, 10)
-    this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))[0]
+    this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)  //数组扁平化处理
     this.fourData.splice(0, this.inputVal)
 
     this.inventoryInterval = setInterval(() => {
       $this.fourData.push($this.sixData[$this.inputVal + this.index])
       if ($this.threeData.length === 0) {
-        $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData)))
+        $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
       }
       // $this.threeData.push($this.fourData[0])
       // $this.fourData.splice(0, 1)
@@ -198,7 +198,7 @@ export default {
         this.inventoryInterval = setInterval(() => {
           $this.fourData.push($this.sixData[$this.inputVal + this.index])
           if (this.threeData.length === 0) {
-            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))
+            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)
           }
           // $this.threeData.push($this.fourData[0])
           // $this.fourData.splice(0, 1)
@@ -248,7 +248,7 @@ export default {
         this.inventoryInterval = setInterval(() => {
           $this.fourData.push($this.sixData[$this.inputVal + this.index])
           if (this.threeData.length === 0) {
-            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData)))
+            this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)
           }
           // $this.threeData.push($this.fourData[0])
           // $this.fourData.splice(0, 1)
