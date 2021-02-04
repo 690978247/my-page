@@ -110,9 +110,10 @@ export default {
       currentSix: [],
       currentFirst: [],
       firstList: [],
+      threeList: [],
       sixList: [],
       time: 1000,
-      inputVal: 40, //漆前库初始数量
+      inputVal: 36, //漆前库初始数量
       LastColor: '', //上车颜色
       changeColors: 0,
       ID: 0, //当前任务号
@@ -155,7 +156,11 @@ export default {
     })
     // this.threeData = this.fourData.splice(0, 10)
     this.threeData = JSON.parse(JSON.stringify(this.GetDataToCommandPool(this.fourData))).flat(Infinity)  //数组扁平化处理
-    this.fourData.splice(0, this.inputVal)
+    this.threeList = this.threeData.map((item, index) => {
+        return item.planOut
+    })
+    $this.fourData = $this.fourData.filter(item => !$this.threeList.includes(item.planOut))
+    // this.fourData.splice(0, this.inputVal)
     this.timerList()
     
   },
@@ -167,6 +172,10 @@ export default {
         $this.fourData.push($this.sixData[$this.inputVal + this.index])
         if ($this.threeData.length === 0) {
           $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
+          this.threeList = this.threeData.map((item, index) => {
+              return item.planOut
+          })
+          $this.fourData = $this.fourData.filter(item => !$this.threeList.includes(item.planOut))
         }
         // $this.threeData.push($this.fourData[0])
         // $this.fourData.splice(0, 1)
