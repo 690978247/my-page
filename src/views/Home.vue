@@ -225,9 +225,10 @@ export default {
     clearData () {
       var $this = this
       if (this.clear) {
+        $this.clear = !$this.clear
         this.clearTimer = setInterval(() => {
           if ($this.threeData.length === 0) {
-            $this.clear = !$this.clear
+            // $this.clear = !$this.clear
             clearInterval(this.inventoryInterval)
             clearInterval(this.tasksInterval)
             clearInterval(this.PBSInterval)
@@ -236,6 +237,10 @@ export default {
         }, 1000)
       } else {
         $this.clear = !$this.clear
+        clearInterval(this.inventoryInterval)
+        clearInterval(this.tasksInterval)
+        clearInterval(this.PBSInterval)
+        clearInterval(this.clearTimer)
         this.inventoryInterval = setInterval(() => {
           $this.fourData.push($this.sixData[$this.inputVal + this.index])
           if (this.threeData.length === 0) {
@@ -333,7 +338,7 @@ export default {
         //var return_list 
         //while ()
 
-    }
+        }
   }
 }
 </script>
