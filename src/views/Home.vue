@@ -163,38 +163,59 @@ export default {
     timerList () {
       var $this = this
         this.inventoryInterval = setInterval(() => {
-        $this.fourData.push($this.sixData[$this.inputVal + $this.index])
-        if ($this.threeData.length === 0) {
-          $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
-          $this.threeList = $this.threeData.map((item, index) => {
-              return item.planOut
-          })
-          $this.fourData = $this.fourData.filter(item => !$this.threeList.includes(item.planOut))
+        if ($this.inputVal + $this.index < $this.sixData.length) {   // 判断焊装发车内容是否全部注入漆前库-库存
+          $this.fourData.push($this.sixData[$this.inputVal + $this.index])
         }
-        // $this.threeData.push($this.fourData[0])
-        // $this.fourData.splice(0, 1)
-        $this.index++
+        if ($this.threeData.length === 0) {
+            if ($this.fourData.length === 0) {
+              console.log('清除库存定时器')
+              clearInterval(this.inventoryInterval)
+            }
+            $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
+            $this.threeList = $this.threeData.map((item, index) => {
+                return item.planOut
+            })
+            $this.fourData = $this.fourData.filter(item => !$this.threeList.includes(item.planOut))
+          }
+          // $this.threeData.push($this.fourData[0])
+          // $this.fourData.splice(0, 1)
+          $this.index++
       }, $this.time)
 
       this.tasksInterval = setInterval(() => {
-        $this.threeData[0].outNum = $this.ID
-        $this.fiveData.forEach((item,index) => {
-          if (item.planOut === $this.threeData[0].planOut) {
-            $this.fiveData[index].outNum = $this.ID
-          }
-        })
-        $this.firstData.push($this.threeData[0])
-        $this.ID++
-        if ($this.LastColor !== $this.threeData[0].color) {
-          $this.changeColors++
+        if ($this.fourData.length === 0 && $this.threeData.length === 0) {
+          console.log('清除task定时器')
+          clearInterval(this.tasksInterval)
+        } else {
+          // if ($this.fourData.length !== 0) {
+            $this.threeData[0].outNum = $this.ID
+            $this.fiveData.forEach((item,index) => {
+              if (item.planOut === $this.threeData[0].planOut) {
+                $this.fiveData[index].outNum = $this.ID
+              }
+            })
+            $this.firstData.push($this.threeData[0])
+            $this.ID++
+            if ($this.LastColor !== $this.threeData[0].color) {
+              $this.changeColors++
+            }
+            $this.LastColor = $this.threeData[0].color
+            $this.threeData.splice(0, 1)
+          // }
         }
-        $this.LastColor = $this.threeData[0].color
-        $this.threeData.splice(0, 1)
       }, $this.time)
 
       this.PBSInterval = setInterval(() => {
-        if ($this.firstData.length >= 50) {
+        if ($this.fourData.length === 0 && $this.threeData.length === 0) {
           $this.firstData.splice(0, 5)
+          if ($this.firstData.length === 0) {
+            console.log('清除PBS定时器')
+            clearInterval(this.PBSInterval)
+          }
+        } else {
+          if ($this.firstData.length >= 50) {
+            $this.firstData.splice(0, 5)
+          }
         }
       }, 5000)
     },
@@ -329,8 +350,6 @@ export default {
     //     var del_li 
     //     $.each(data, function (i, item) {
     //         var result = true;
-    //         console.log(i);
-    //         console.log(item.color);
     //         $.each(data, function (j, item1) {
     //             // 当前任务号加本颜色的数量，若大于其中一个其他颜色的最小出库顺序号+50的情况视为影响出库
     //             if (i != j) {
@@ -396,8 +415,6 @@ export default {
                 var temp_li = data_qiqian.sort((b, c) => (b.planOut - c.planOut))
                 min_planOut = temp_li[0].planOut
                 min_color = temp_li[0].color
-                console.log("min_color " + min_color + " " + min_planOut);
-                console.log()
                 // 1.1相同   计算非当前颜色的最小顺序号，最大喷漆组数量
                 if (min_color == this.LastColor) {
 
@@ -428,7 +445,6 @@ export default {
                     }
                     else {
                         //暂时返回数量最多的一个
-                        //console.log("暂时返回数量最多的一个")
                         return excludeResult.sort((b, c) => (c.num - b.num))[0];
                     }
                 }
@@ -481,8 +497,6 @@ export default {
             var del_li 
             $.each(data, function (i, item) {
                 var result = true;
-                console.log(i);
-                console.log(item.color);
                 $.each(data, function (j, item1) {
                     // 当前任务号加本颜色的数量，若大于其中一个其他颜色的最小出库顺序号+50的情况视为影响出库
                     if (i != j) {
