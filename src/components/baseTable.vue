@@ -9,6 +9,8 @@
       tooltip-effect="dark"
       style="width: 100%"
       highlight-current-row
+      v-bind="$attrs"
+      v-on="$listeners"
       :row-class-name="rowClassName"
       @selection-change="handleSelectionChange">
         <el-table-column
