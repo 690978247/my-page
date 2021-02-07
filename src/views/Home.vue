@@ -170,6 +170,7 @@ export default {
             if ($this.fourData.length === 0) {
               console.log('清除库存定时器')
               clearInterval(this.inventoryInterval)
+              return
             }
             $this.threeData = JSON.parse(JSON.stringify($this.GetDataToCommandPool($this.fourData))).flat(Infinity)
             $this.threeList = $this.threeData.map((item, index) => {
@@ -186,6 +187,7 @@ export default {
         if ($this.fourData.length === 0 && $this.threeData.length === 0) {
           console.log('清除task定时器')
           clearInterval(this.tasksInterval)
+          return
         } else {
           // if ($this.fourData.length !== 0) {
             $this.threeData[0].outNum = $this.ID
@@ -211,6 +213,7 @@ export default {
           if ($this.firstData.length === 0) {
             console.log('清除PBS定时器')
             clearInterval(this.PBSInterval)
+            return
           }
         } else {
           if ($this.firstData.length >= 50) {
@@ -283,128 +286,6 @@ export default {
     },
 
     // 算法部分
-    // GetDataToCommandPool(data_qiqian) {
-    //         var min_planOut
-    //         var min_color 
-    //         //1 判断上车颜色 是否与库存内的最小任务号相同
-    //         if (data_qiqian.length > 0) {
-                 
-    //             var temp_li = data_qiqian.sort((b, c) => (b.planOut - c.planOut))
-    //             min_planOut = temp_li[0].planOut
-    //             min_color = temp_li[0].color 
-
-    //             // 1.1相同   计算非当前颜色的最小顺序号，最大喷漆组数量
-    //             if (min_color == this.LastColor) {
-
-    //                 var min2_data = this.filiterisNotColor(data_qiqian, min_color).sort((b, c) => (b.planOut - c.planOut))
-    //                 //的最小顺序号
-    //                 var min2_planOut = min2_data[0].planOut
-    //                 // 判断该颜色数量  是否小于 第二小顺序号的最大喷漆组数量
-    //                 if (this.ID + this.filiterColor(data_qiqian, min_color).length < min2_planOut + 50) {
-    //                     return this.filiterColor(data_qiqian, min_color)
-    //                 }
-    //                 else {
-    //                     //不做处理 继续执行
-
-    //                 }
-    //             }
-
-    //             // 所有组  取当前任务号根据加上对应颜色的漆前库库存数量，排除影响其他颜色出库顺序颜色
-    //             var GroupData = this.filiterComputeGroupByColor(data_qiqian);
-
-    //             //排除影响出库的颜色分组()
-    //             var excludeResult =  this.excludeGroup(GroupData);
-
-    //             //如果筛选结果不为空的话，从筛选结果中取
-    //             if (excludeResult) {
-    //                 //优先选择与上次喷漆色相同的
-    //                 if (this.filiterColor(excludeResult, this.LastColor).length > 1) {
-    //                     return this.filiterColor(excludeResult, this.LastColor);
-    //                 }
-    //                 else {
-    //                     //暂时返回最小顺序的
-    //                     return this.filiterColor(excludeResult, min_color);
-    //                 }
-    //             }
-    //             else {
-    //                 return this.filiterColor(data_qiqian, min_color);
-
-    //             }
-
-    //         }
-    // },
-    //  //选取前N条进行出库
-
-
-
-    // //排除影响出库的颜色分组() 
-    // excludeGroup(data ,color) {
-
-    //     ////递归移除
-    //     //data.forEach((item, index, arr) => {
-    //     //    if (item.color === "宇宙蓝金属漆") {
-    //     //        data.splice(index, 1)
-    //     //    }
-    //     //});
-    //     //return data;
-    //     var del_li 
-    //     $.each(data, function (i, item) {
-    //         var result = true;
-    //         $.each(data, function (j, item1) {
-    //             // 当前任务号加本颜色的数量，若大于其中一个其他颜色的最小出库顺序号+50的情况视为影响出库
-    //             if (i != j) {
-    //                 //if ((item1.MinPlanOut + 50) < (ID + item.num)) {
-    //                 if ((item.color == color)) { 
-    //                     result = false;
-    //                 }
-    //             }
-    //         });
-    //         item.result = result;
-    //     });
-    //     data = data.filter(item => item.result == true)
-    //     return data;
-    // },
-
-    //     //筛选出库颜色
-    // filiterColor(data, itemcolor) {
-    //     return data.filter(item => item.color == itemcolor)
-    // },
-
-
-    // //排除出库颜色
-    // filiterisNotColor(data, itemcolor) {
-    //     return data.filter(item => item.color == itemcolor)
-    // },
-
-    // //选出该数据的前N条
-
-
-
-    // //颜色分组 
-    // filiterComputeGroupByColor(data) {
-    //     var sorted = this.groupBy(data, function (item) {
-    //         return [item.color];//按照color进行分组
-    //     });
-    //     $.each(sorted, function (i, item) {
-    //         item.color = item[0].color
-    //         item.MinPlanOut = item[0].planOut
-    //         item.num = item.length
-    //     });
-    //     return sorted
-    // },
-
-    // groupBy(array, f) {
-    //     const groups = {};
-    //     array.forEach(function (o) { //注意这里必须是forEach 大写
-    //         const group = JSON.stringify(f(o));
-    //         groups[group] = groups[group] || [];
-    //         groups[group].push(o);
-    //     });
-    //     return Object.keys(groups).map(function (group) {
-    //         return groups[group];
-    //     });
-    // }
-
     // 确认任务池数据为空 输入漆前库内的相关对象数组，返回应该投入到任务池中的对象数据
         GetDataToCommandPool(data_qiqian) {
             var min_planOut
