@@ -110,9 +110,12 @@ export default {
       inputVal: 36, //漆前库初始数量
       LastColor: '', //上次颜色
       changeColors: 0, // 换色次数
-      ID: 0, //当前任务号
+      ID: 1, //当前任务号
       index: 0,
       clearTimer: null,
+      redIndex: 1,
+      redList: [],
+      arabList: [],
     }
   },
   watch: {
@@ -209,18 +212,47 @@ export default {
 
       this.PBSInterval = setInterval(() => {
         if ($this.fourData.length === 0 && $this.threeData.length === 0) {
-          $this.firstData.splice(0, 5)
+          //  $this.firstData.splice(0, 5)
+          // $this.firstData.splice(0, 1)
           if ($this.firstData.length === 0) {
             console.log('清除PBS定时器')
             clearInterval(this.PBSInterval)
             return
           }
         } else {
-          if ($this.firstData.length >= 50) {
-            $this.firstData.splice(0, 5)
-          }
+          let times = 0
+      //     console.log($this.firstList)
+      //     let times = 1
+      //     $this.firstList.forEach((item, index) => {
+      //       if (item.planOut === times) {
+      //         times++
+      //         $this.redList.push(item.planOut)
+      //       }
+      //     })
+          // if ($this.firstData.length >= 50) {
+            $this.currentFirst.forEach((item, index) => {
+              if (item === $this.redIndex) {
+                $this.arabList.push(item)
+                $this.firstData.forEach((fItem, fIndex) => {
+                  if (fItem.planOut === item) {
+                    $this.firstData.splice(fIndex, 1)
+                  }
+                })
+                times ++
+              }
+            })
+            if (times !== 0) {
+              $this.redIndex++
+            }
+            // console.log('arabList', $this.arabList)
+          // }
+      //   }
+      // }, 1000)
+      // if ($this.firstData.length >= 50) {
+      //       $this.firstData.splice(0, 5)
+      //     }
         }
-      }, 5000)
+      }, 1000)
     },
     stopTimer () {
       var $this = this
@@ -259,10 +291,22 @@ export default {
       if (this.currentFirst.includes(row.planOut)) {
         return 'in-row'
       }
-      if (this.firstList.includes(row.planOut)) {
+      if (this.arabList.includes(row.planOut)) {
         return 'out-row'
       }
     },
+    // fiveRowClassName({row, rowIndex}){
+    //   var $this = this
+    //   if ($this.firstList.includes(row.planOut)) {
+    //     if ($this.redList.includes(row.planOut)) {
+    //       return  'out-row'
+    //     }
+    //       return  'in-row'
+    //     }
+    //   // if (this.firstList.includes(row.planOut)) {
+    //   //   return 'out-row'
+    //   // }
+    // },
     sixRowClassName({row, rowIndex}){
       if (this.currentSix.includes(row.planOut)) {
         return 'in-row'
