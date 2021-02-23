@@ -110,7 +110,7 @@ export default {
       inputVal: 36, //漆前库初始数量
       LastColor: '', //上次颜色
       changeColors: 0, // 换色次数
-      ID: 0, //当前任务号
+      ID: 1, //当前任务号
       index: 0,
       clearTimer: null,
     }
